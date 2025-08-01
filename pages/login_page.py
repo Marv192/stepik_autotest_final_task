@@ -1,5 +1,4 @@
 from .base_page import BasePage
-from ..conftest import browser
 from .locators import LoginPageLocators
 
 
