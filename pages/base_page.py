@@ -1,4 +1,4 @@
-from .locators import BasePageLocators
+from .locators import BasePageLocators, BasketPageLocators
 from stepik_autotest_final_task.conftest import browser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.common.exceptions import NoAlertPresentException
@@ -14,9 +14,14 @@ class BasePage():
         self.url = url
         self.browser.implicitly_wait(timeout)
 
+    def go_to_basket_page(self):
+        basket_link = self.browser.find_element(*BasePageLocators.BASKET_LINK)
+        basket_link.click()
+
     def go_to_login_page(self):
         link = self.browser.find_element(*BasePageLocators.LOGIN_LINK_INVALID)
         link.click()
+        print("clicked")
 
     def is_disappeared(self, how, what, timeout=4):
         try:
