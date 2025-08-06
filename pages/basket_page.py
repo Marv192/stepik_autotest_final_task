@@ -1,5 +1,3 @@
-import time
-
 from stepik_autotest_final_task.pages.base_page import BasePage
 from .locators import BasketPageLocators
 

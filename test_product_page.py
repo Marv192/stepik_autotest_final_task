@@ -1,7 +1,58 @@
 from .pages.basket_page import BasketPage
 from .pages.locators import ProductPageLocators
 from .pages.product_page import ProductPage
+from .pages.login_page import LoginPage
 import pytest, time
+
+# При работе API, создали бы следующий класс:
+# @pytest.mark.login
+# class TestLoginFromProductPage():
+#     @pytest.fixture(scope="function", autouse=True)
+#     def setup(self):
+#         self.product = ProductFactory(title="Best book created by robot")
+#         # создаем по апи
+#         self.link = self.product.link
+#         yield
+#         # после этого ключевого слова начинается teardown
+#         # выполнится после каждого теста в классе
+#         # удаляем те данные, которые мы создали
+#         self.product.delete()
+#
+#     def test_guest_can_go_to_login_page_from_product_page(self, browser):
+#         page = ProductPage(browser, self.link)
+#         # дальше обычная реализация теста
+#
+#     def test_guest_should_see_login_link(self, browser):
+#         page = ProductPage(browser, self.link)
+#         # дальше обычная реализация теста
+
+
+class TestUserAddToBasketFromProductPage():
+
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(self, browser):
+        link = 'http://selenium1py.pythonanywhere.com/accounts/login/'
+        page = LoginPage(browser, link)
+        page.open()
+        # не стал устанавливать и импортировать библиотеки для генерации чтобы было проще проверять
+        email = str(time.time()) + "@fakemail.org"
+        password = "pAssWorD12311"
+        page.register_new_user(email, password)
+        page.should_be_authorized_user()
+
+    def test_user_cant_see_success_message2(self, browser):
+        link = 'http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/'
+        page = ProductPage(browser, link)
+        page.open()
+        page.should_not_be_success_message()
+
+    def test_user_can_add_product_to_basket(self, browser):
+        link = 'http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/'
+        page = ProductPage(browser, link)
+        page.open()
+        page.add_to_basket()
+        page.check_product_name()
+        page.check_basket_price()
 
 
 @pytest.mark.parametrize('link', ["http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer0",
@@ -23,20 +74,22 @@ def test_guest_can_add_product_to_basket(browser, link):
     page.check_basket_price()
 
 def test_guest_cant_see_product_in_basket_opened_from_main_page(browser):
-    link = 'http://selenium1py.pythonanywhere.com/en-gb/catalogue/the-age-of-the-pussyfoot_89/'
+    link = 'http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/'
     page = ProductPage(browser, link)
     page.open()
     page.go_to_basket_page()
     basket_page = BasketPage(browser, browser.current_url)
     basket_page.basket_is_empty()
 
-def test_guest_cant_see_success_message_after_adding_product_to_basket1(browser, link):
+def test_guest_cant_see_success_message_after_adding_product_to_basket1(browser):
+    link = 'http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/'
     page = ProductPage(browser, link)
     page.open()
     page.add_to_basket()
     page.should_not_be_success_message()
 
-def test_guest_cant_see_success_message2(browser, link):
+def test_guest_cant_see_success_message2(browser):
+    link = 'http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/'
     page = ProductPage(browser, link)
     page.open()
     page.should_not_be_success_message()
@@ -47,8 +100,9 @@ def test_guest_should_see_login_link_on_product_page(browser):
     page.open()
     page.should_be_login_link()
 
-def test_message_disappeared_after_adding_product_to_basket3(browser, link):
-    page = ProductPage(browser, link)
+def test_message_disappeared_after_adding_product_to_basket3(browser):
+    link = 'http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/'
+    page = ProductPage(browser)
     page.open()
     page.add_to_basket()
     assert page.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), "Success message did not disappear"
