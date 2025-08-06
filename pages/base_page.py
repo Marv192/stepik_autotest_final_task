@@ -1,4 +1,4 @@
-from .locators import BasePageLocators, BasketPageLocators
+from .locators import BasePageLocators
 from stepik_autotest_final_task.conftest import browser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.common.exceptions import NoAlertPresentException
